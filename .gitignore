@@ -1,0 +1,9 @@
+# Prerequisites
+node_modules/
+.env
+
+# Build outputs
+/frontend/dist
+
+# macOS specific
+.DS_Store
