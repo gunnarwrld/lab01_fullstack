@@ -5,5 +5,7 @@ const accountController = require('../controllers/accountController');
 // Routes adhering strictly to Router -> Controller -> Model pattern
 router.get('/', accountController.getAll);
 router.post('/', accountController.create);
+router.put('/:id', accountController.updateAccount);
+router.delete('/:id', accountController.deleteAccount);
 
 module.exports = router;
