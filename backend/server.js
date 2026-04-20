@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 
 // Import Routes 
 app.use('/api/accounts', require('./routes/accountRoutes'));
+app.use('/api/stats', require('./routes/statsRoutes'));
 
 const PORT = process.env.PORT || 5000;
 
