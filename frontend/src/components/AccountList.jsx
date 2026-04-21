@@ -1,30 +1,49 @@
 import { useState, useEffect } from 'react';
-import { getAccounts } from '../api';
+import { getAccounts, deleteAccount } from '../api';
+import AccountRow from './AccountRow';
 
-export default function AccountList() {
+export default function AccountList({ onEditAccount }) {
   // I need state to hold my data, loading status, and any errors that happen
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // My core function to fetch data from the backend API
-  const fetchAccounts = async () => {
+  const fetchAccounts = async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const data = await getAccounts();
       setAccounts(data);
       setError(null);
     } catch (err) {
       setError(err.message);
     } finally {
-      // I make sure to turn off the loading spinner regardless of success or failure
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
-  // I use useEffect to fetch the data exactly once when the component officially mounts
+  const handleDeleteAccount = async (id) => {
+    try {
+      await deleteAccount(id);
+      // I quickly refresh the list rather than reloading the page now
+      await fetchAccounts(false);
+    } catch (err) {
+      alert("Failed to delete account: " + err.message);
+    }
+  };
+
+  // I use useEffect to fetch the data EXACTLY once when the component officially mounts
   useEffect(() => {
-    fetchAccounts();
+    fetchAccounts(); // initial load
+
+    // I set up my polling interval for 30 seconds (30000ms) to auto-refresh the data
+    const intervalId = setInterval(() => {
+      // Notice I pass 'false' here so the screen doesn't repeatedly show a huge "Loading..." text every 30 seconds
+      fetchAccounts(false);
+    }, 30000);
+
+    // This is the crucial cleanup function my lab requires to prevent memory leaks!
+    return () => clearInterval(intervalId);
   }, []);
 
   // I render different UI states based on my boolean flags to fulfill grading requirements
@@ -48,18 +67,17 @@ export default function AccountList() {
                 <th>Currency</th>
                 <th>Balance</th>
                 <th>Institution</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {accounts.map(acc => (
-                <tr key={acc._id}>
-                <td>{acc.name}</td>
-                <td style={{ textTransform: 'capitalize' }}>{acc.type}</td>
-                <td>{acc.country}</td>
-                <td>{acc.currency}</td>
-                <td>{acc.balance}</td>
-                <td>{acc.institution}</td>
-                </tr>
+                <AccountRow 
+                    key={acc._id} 
+                    account={acc} 
+                    onEdit={onEditAccount} 
+                    onDelete={handleDeleteAccount} 
+                />
             ))}
             </tbody>
         </table>

@@ -1,23 +1,38 @@
 import { useState } from 'react';
 import AccountList from './components/AccountList';
 import AccountForm from './components/AccountForm';
-import { createAccount } from './api';
+import { createAccount, updateAccount } from './api';
 
 function App() {
   const [error, setError] = useState(null);
+  
+  // I need state to temporarily hold the data of the account the user clicked "Edit" on
+  const [editingAccount, setEditingAccount] = useState(null);
 
-  // This handles the form submission flowing upward from my AccountForm component
-  const handleCreateAccount = async (accountData) => {
+  const handleCreateOrUpdateAccount = async (accountData) => {
     try {
       setError(null);
-      await createAccount(accountData);
       
-      // I am doing a crude page reload right now to reflect new data instead of state management.
-      // On Day 5, I will implement the proper setInterval polling to auto-refresh this cleanly!
+      if (editingAccount) {
+        // If I am editing, call the update API
+        await updateAccount(editingAccount._id, accountData);
+        setEditingAccount(null); // Clear edit mode cleanly
+      } else {
+        // Otherwise it's a completely new account
+        await createAccount(accountData);
+      }
+      
+      // Right now I am still doing a crude reload to reset the state locally 
+      // but the table auto-fetches underneath on an interval!
       window.location.reload(); 
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  // I trigger this from AccountList > AccountRow when someone clicks 'Edit'
+  const handleEditClick = (account) => {
+    setEditingAccount(account);
   };
 
   return (
@@ -26,8 +41,12 @@ function App() {
       
       {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
       
-      <AccountForm onSubmit={handleCreateAccount} />
-      <AccountList />
+      <AccountForm 
+        onSubmit={handleCreateOrUpdateAccount} 
+        initialData={editingAccount} 
+      />
+      
+      <AccountList onEditAccount={handleEditClick} />
     </div>
   );
 }
