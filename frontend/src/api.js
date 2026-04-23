@@ -12,17 +12,16 @@ export const getAccounts = async (filters = {}) => {
 };
 
 export const createAccount = async (data) => {
-  // I must include the hardcoded user ID here since we do not have an auth system built out
-  // NOTE: This ID will fail if the user's ID from seeding is different. 
-  // In a real application, I would pass the logged-in user's ID.
-  const authPayload = { ...data, userId: "60b8c62b5d4b5c1c8c8b4567" }; // We'll handle grabbing the exact ID when we bind it to the App state.
-
+  // Do not hardcode userId here. Backend will assign or use an existing user when missing.
   const response = await fetch(`${BASE}/accounts`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(authPayload)
+    body: JSON.stringify(data)
   });
-  if (!response.ok) throw new Error('Failed to create account');
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error('Failed to create account: ' + errText);
+  }
   return response.json();
 };
 
