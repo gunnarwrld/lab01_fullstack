@@ -1,4 +1,5 @@
 const Account = require('../models/Account');
+const User = require('../models/User');
 
 // @desc    Get all accounts (supports ?country= and ?type= filters)
 // @route   GET /api/accounts
@@ -22,17 +23,24 @@ exports.create = async (req, res) => {
   try {
     const { userId, name, type, country, currency, balance, institution } = req.body;
 
-    // Input validation 
-    if (!userId || !name || !type || !country || !currency || balance === undefined || !institution) {
-      return res.status(400).json({ error: 'Bad request', message: 'All fields are required' });
+    // Basic input validation (userId is optional — assign one if missing)
+    if (!name || !type || !country || !currency || balance === undefined || !institution) {
+      return res.status(400).json({ error: 'Bad request', message: 'Missing required fields' });
     }
 
     if (!['savings', 'investment', 'cash'].includes(type)) {
       return res.status(400).json({ error: 'Bad request', message: 'Type must be savings, investment, or cash' });
     }
 
+    // Dynamic User Assignment (No auth system in lab)
+    // I grab the first user in the DB so my foreign key constraint doesn't fail
+    const defaultUser = await require('../models/User').findOne();
+    if (!defaultUser) {
+        return res.status(500).json({ error: 'Server Error', message: 'No users found in database. Please run seed.js' });
+    }
+
     const newAccount = await Account.create({
-      userId,
+      userId: defaultUser._id,
       name,
       type,
       country,
