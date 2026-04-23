@@ -3,12 +3,14 @@ import { getAccounts, deleteAccount } from '../api';
 import AccountRow from './AccountRow';
 
 export default function AccountList({ onEditAccount }) {
-  // I need state to hold my data, loading status, and any errors that happen
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Custom interactive features requested by lab: Filter and Sort
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  // My core function to fetch data from the backend API
   const fetchAccounts = async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
@@ -25,53 +27,78 @@ export default function AccountList({ onEditAccount }) {
   const handleDeleteAccount = async (id) => {
     try {
       await deleteAccount(id);
-      // I quickly refresh the list rather than reloading the page now
       await fetchAccounts(false);
     } catch (err) {
       alert("Failed to delete account: " + err.message);
     }
   };
 
-  // I use useEffect to fetch the data EXACTLY once when the component officially mounts
   useEffect(() => {
-    fetchAccounts(); // initial load
-
-    // I set up my polling interval for 30 seconds (30000ms) to auto-refresh the data
+    fetchAccounts();
     const intervalId = setInterval(() => {
-      // Notice I pass 'false' here so the screen doesn't repeatedly show a huge "Loading..." text every 30 seconds
       fetchAccounts(false);
     }, 30000);
-
-    // This is the crucial cleanup function my lab requires to prevent memory leaks!
     return () => clearInterval(intervalId);
   }, []);
 
-  // I render different UI states based on my boolean flags to fulfill grading requirements
+  // I handle sorting when a user clicks a table header
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // I apply my search filter first
+  const filteredAccounts = accounts.filter(acc => 
+    acc.country.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    acc.type.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Then I apply my sorting mechanism
+  const sortedAccounts = [...filteredAccounts].sort((a, b) => {
+    if (sortConfig.key) {
+      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
+      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    return 0;
+  });
+
   if (loading) return <p>Loading my accounts...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
-  // A basic table so I can view my main entity properly
   return (
     <div className="account-list" style={{ marginTop: '20px' }}>
       <h2>My Financial Accounts</h2>
       
-      {accounts.length === 0 ? (
-          <p>No accounts found.</p>
+      {/* Search Input for custom interactive feature */}
+      <input 
+        type="text" 
+        placeholder="Search by country or type..." 
+        value={searchTerm} 
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: '15px', padding: '8px', width: '250px', borderRadius: '4px', border: '1px solid #ccc' }}
+      />
+      
+      {sortedAccounts.length === 0 ? (
+          <p>No accounts found matching your filter.</p>
       ) : (
-        <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-            <thead>
+        <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', backgroundColor: 'white' }}>
+            <thead style={{ backgroundColor: '#f2f2f2' }}>
             <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Country</th>
-                <th>Currency</th>
-                <th>Balance</th>
+                {/* Clickable headers for sorting */}
+                <th onClick={() => requestSort('name')} style={{ cursor: 'pointer' }}>Name ↕</th>
+                <th onClick={() => requestSort('type')} style={{ cursor: 'pointer' }}>Type ↕</th>
+                <th onClick={() => requestSort('country')} style={{ cursor: 'pointer' }}>Country ↕</th>
+                <th onClick={() => requestSort('currency')} style={{ cursor: 'pointer' }}>Currency ↕</th>
+                <th onClick={() => requestSort('balance')} style={{ cursor: 'pointer' }}>Balance ↕</th>
                 <th>Institution</th>
                 <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            {accounts.map(acc => (
+            {sortedAccounts.map(acc => (
                 <AccountRow 
                     key={acc._id} 
                     account={acc} 

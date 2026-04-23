@@ -1,5 +1,5 @@
 // I centralized all my fetch logic here so I don't clutter my React components
-const BASE = 'http://localhost:5000/api';
+const BASE = 'http://localhost:8000/api';
 
 export const getAccounts = async (filters = {}) => {
   // I construct query parameters if filters are passed
