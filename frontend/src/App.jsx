@@ -31,14 +31,16 @@ function App() {
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-      <h1 style={{ color: '#2c3e50', borderBottom: '3px solid #3498db', paddingBottom: '10px' }}>Global Net Worth Tracker</h1>
+    <div className="app-container">
+      <div className="app-header">
+        <h1 className="app-title">Global Net Worth Tracker</h1>
+      </div>
       
       <NetWorthSummary />
       
       {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
       
-      <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
+      <div className="card">
         <AccountForm 
             onSubmit={handleCreateOrUpdateAccount} 
             initialData={editingAccount} 
