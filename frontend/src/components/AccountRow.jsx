@@ -36,70 +36,84 @@ export default function AccountRow({ account, onEdit, onDelete }) {
   return (
     <>
       <tr>
-        <td>
+        <td style={{ fontWeight: '500', color: '#0f172a' }}>
           {account.name}
           {account.userId && account.userId.name && (
-            <span style={{ fontSize: '0.8em', backgroundColor: '#e2e8f0', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', color: '#475569' }}>
+            <span className="badge">
               👤 {account.userId.name}
             </span>
           )}
         </td>
-        <td style={{ textTransform: 'capitalize' }}>{account.type}</td>
+        <td style={{ textTransform: 'capitalize' }}>
+          <span style={{ 
+            backgroundColor: account.type === 'savings' ? '#e0f2fe' : account.type === 'investment' ? '#fce7f3' : '#fef3c7',
+            color: account.type === 'savings' ? '#0369a1' : account.type === 'investment' ? '#be185d' : '#b45309',
+            padding: '4px 8px', borderRadius: '4px', fontSize: '0.85em', fontWeight: '500'
+          }}>
+            {account.type}
+          </span>
+        </td>
         <td>{account.country}</td>
-        <td>{account.currency}</td>
-        <td>{account.balance}</td>
+        <td><span className="badge" style={{ backgroundColor: '#e2e8f0' }}>{account.currency}</span></td>
+        <td style={{ fontWeight: '600' }}>{account.balance.toLocaleString()}</td>
         <td>{account.institution}</td>
         <td>
-          <button 
-            onClick={toggleHistory}
-            style={{ marginRight: '5px' }}
-          >
-            History
-          </button>
-          <button 
-            onClick={() => onEdit(account)} 
-            style={{ marginRight: '5px' }}
-            disabled={isDeleting}
-          >
-            Edit
-          </button>
-          <button 
-            onClick={handleDelete} 
-            disabled={isDeleting}
-            style={{ color: 'white', backgroundColor: 'red', border: 'none', padding: '4px 8px', borderRadius: '3px', cursor: 'pointer' }}
-          >
-            {isDeleting ? '...' : 'Delete'}
-          </button>
+          <div className="actions">
+            <button 
+              onClick={toggleHistory}
+              className="btn-secondary"
+            >
+              History
+            </button>
+            <button 
+              onClick={() => onEdit(account)} 
+              className="btn-primary"
+              disabled={isDeleting}
+            >
+              Edit
+            </button>
+            <button 
+              onClick={handleDelete} 
+              disabled={isDeleting}
+              className="btn-danger"
+            >
+              {isDeleting ? '...' : 'Delete'}
+            </button>
+          </div>
         </td>
       </tr>
       {showHistory && (
-        <tr style={{ backgroundColor: '#f8fafc' }}>
-          <td colSpan="7" style={{ padding: '15px' }}>
-            <h4 style={{ margin: '0 0 10px 0' }}>Snapshot History</h4>
-            {loadingHistory ? (
-              <p>Loading...</p>
-            ) : snapshots.length === 0 ? (
-              <p>No snapshots found for this account.</p>
-            ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9em' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                    <th style={{ textAlign: 'left', padding: '4px' }}>Date</th>
-                    <th style={{ textAlign: 'left', padding: '4px' }}>Balance (USD)</th>
-                    <th style={{ textAlign: 'left', padding: '4px' }}>Exchange Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {snapshots.map(snap => (
-                    <tr key={snap._id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '4px' }}>{new Date(snap.recordedAt).toLocaleString()}</td>
-                      <td style={{ padding: '4px' }}>${snap.balanceUSD.toFixed(2)}</td>
-                      <td style={{ padding: '4px' }}>{snap.exchangeRate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+        <tr className="history-row">
+          <td colSpan="7" style={{ padding: 0 }}>
+            <div className="history-container">
+              <h4>Snapshot History</h4>
+              {loadingHistory ? (
+                <p style={{ color: '#64748b' }}>Loading history...</p>
+              ) : snapshots.length === 0 ? (
+                <p style={{ color: '#64748b' }}>No snapshots found for this account.</p>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="data-table" style={{ fontSize: '0.9em', margin: 0, boxShadow: 'none', border: '1px solid var(--border)' }}>
+                    <thead>
+                      <tr>
+                        <th>Date Recorded</th>
+                        <th>Balance (USD)</th>
+                        <th>Exchange Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {snapshots.map(snap => (
+                        <tr key={snap._id}>
+                          <td>{new Date(snap.recordedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</td>
+                          <td style={{ fontWeight: '600' }}>${snap.balanceUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                          <td>{snap.exchangeRate}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </td>
         </tr>
       )}

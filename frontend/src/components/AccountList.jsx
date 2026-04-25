@@ -69,45 +69,52 @@ export default function AccountList({ onEditAccount, refreshTrigger }) {
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
 
   return (
-    <div className="account-list" style={{ marginTop: '20px' }}>
-      <h2>My Financial Accounts</h2>
-      
-      {/* Search Input for custom interactive feature */}
-      <input 
-        type="text" 
-        placeholder="Search by country or type..." 
-        value={searchTerm} 
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: '15px', padding: '8px', width: '250px', borderRadius: '4px', border: '1px solid #ccc' }}
-      />
+    <div className="account-list" style={{ marginTop: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2 style={{ margin: 0, color: '#0f172a' }}>My Financial Accounts</h2>
+        
+        {/* Search Input for custom interactive feature */}
+        <input 
+          type="text" 
+          placeholder="Search by country or type..." 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="form-control search-bar"
+          style={{ margin: 0 }}
+        />
+      </div>
       
       {sortedAccounts.length === 0 ? (
-          <p>No accounts found matching your filter.</p>
+          <div className="card" style={{ textAlign: 'center', color: '#64748b' }}>
+            <p>No accounts found matching your filter.</p>
+          </div>
       ) : (
-        <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', backgroundColor: 'white' }}>
-            <thead style={{ backgroundColor: '#f2f2f2' }}>
-            <tr>
-                {/* Clickable headers for sorting */}
-                <th onClick={() => requestSort('name')} style={{ cursor: 'pointer' }}>Name ↕</th>
-                <th onClick={() => requestSort('type')} style={{ cursor: 'pointer' }}>Type ↕</th>
-                <th onClick={() => requestSort('country')} style={{ cursor: 'pointer' }}>Country ↕</th>
-                <th onClick={() => requestSort('currency')} style={{ cursor: 'pointer' }}>Currency ↕</th>
-                <th onClick={() => requestSort('balance')} style={{ cursor: 'pointer' }}>Balance ↕</th>
-                <th>Institution</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {sortedAccounts.map(acc => (
-                <AccountRow 
-                    key={acc._id} 
-                    account={acc} 
-                    onEdit={onEditAccount} 
-                    onDelete={handleDeleteAccount} 
-                />
-            ))}
-            </tbody>
-        </table>
+        <div className="table-container">
+          <table className="data-table">
+              <thead>
+              <tr>
+                  {/* Clickable headers for sorting */}
+                  <th onClick={() => requestSort('name')}>Name {sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : '↕'}</th>
+                  <th onClick={() => requestSort('type')}>Type {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : '↕'}</th>
+                  <th onClick={() => requestSort('country')}>Country {sortConfig.key === 'country' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : '↕'}</th>
+                  <th onClick={() => requestSort('currency')}>Currency {sortConfig.key === 'currency' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : '↕'}</th>
+                  <th onClick={() => requestSort('balance')}>Balance {sortConfig.key === 'balance' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : '↕'}</th>
+                  <th>Institution</th>
+                  <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              {sortedAccounts.map(acc => (
+                  <AccountRow 
+                      key={acc._id} 
+                      account={acc} 
+                      onEdit={onEditAccount} 
+                      onDelete={handleDeleteAccount} 
+                  />
+              ))}
+              </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
