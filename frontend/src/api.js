@@ -48,3 +48,9 @@ export const getNetWorth = async () => {
   if (!response.ok) throw new Error('Failed to fetch net worth');
   return response.json();
 };
+
+export const getAccountSnapshots = async (accountId) => {
+  const response = await fetch(`${BASE}/snapshots?accountId=${accountId}`);
+  if (!response.ok) throw new Error('Failed to fetch snapshots');
+  return response.json();
+};
