@@ -31,27 +31,27 @@ export default function NetWorthSummary() {
   if (!stats) return null;
 
   return (
-    <div style={{ padding: '20px', background: '#f8f9fa', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ddd' }}>
-      <h2 style={{ marginTop: 0, color: '#2c3e50' }}>Total Net Worth: ${stats.totalUSD} USD</h2>
+    <div className="card">
+      <h2 className="summary-header">Total Net Worth: ${stats.totalUSD.toLocaleString()}</h2>
       
-      <div style={{ display: 'flex', gap: '40px' }}>
-        <div>
-          <h3 style={{ borderBottom: '2px solid #ccc', paddingBottom: '5px' }}>By Country (USD)</h3>
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
+      <div className="summary-grid">
+        <div className="summary-block">
+          <h3>By Country</h3>
+          <ul className="summary-list">
             {Object.entries(stats.byCountry).map(([country, amount]) => (
-              <li key={country} style={{ marginBottom: '5px' }}>
-                <strong>{country}:</strong> ${amount}
+              <li key={country}>
+                <span>{country}</span> <strong>${amount.toLocaleString()}</strong>
               </li>
             ))}
           </ul>
         </div>
         
-        <div>
-          <h3 style={{ borderBottom: '2px solid #ccc', paddingBottom: '5px' }}>By Asset Type (USD)</h3>
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
+        <div className="summary-block">
+          <h3>By Asset Type</h3>
+          <ul className="summary-list">
             {Object.entries(stats.byType).map(([type, amount]) => (
-              <li key={type} style={{ textTransform: 'capitalize', marginBottom: '5px' }}>
-                <strong>{type}:</strong> ${amount}
+              <li key={type} style={{ textTransform: 'capitalize' }}>
+                <span>{type}</span> <strong>${amount.toLocaleString()}</strong>
               </li>
             ))}
           </ul>
