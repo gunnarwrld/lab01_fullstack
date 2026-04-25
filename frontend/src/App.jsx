@@ -7,6 +7,7 @@ import { createAccount, updateAccount } from './api';
 function App() {
   const [error, setError] = useState(null);
   const [editingAccount, setEditingAccount] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleCreateOrUpdateAccount = async (accountData) => {
     try {
@@ -19,7 +20,7 @@ function App() {
         await createAccount(accountData);
       }
       
-      window.location.reload(); 
+      setRefreshTrigger(prev => prev + 1); 
     } catch (err) {
       setError(err.message);
     }
@@ -44,7 +45,7 @@ function App() {
         />
       </div>
       
-      <AccountList onEditAccount={handleEditClick} />
+      <AccountList onEditAccount={handleEditClick} refreshTrigger={refreshTrigger} />
     </div>
   );
 }

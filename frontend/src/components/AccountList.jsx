@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getAccounts, deleteAccount } from '../api';
 import AccountRow from './AccountRow';
 
-export default function AccountList({ onEditAccount }) {
+export default function AccountList({ onEditAccount, refreshTrigger }) {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +39,7 @@ export default function AccountList({ onEditAccount }) {
       fetchAccounts(false);
     }, 30000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [refreshTrigger]);
 
   // I handle sorting when a user clicks a table header
   const requestSort = (key) => {
