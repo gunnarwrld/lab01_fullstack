@@ -22,6 +22,17 @@ This project follows a strict **Router -> Controller -> Model** pattern.
 - **Interactive UI Filter/Sort**: The `AccountList` allows users to dynamically search by country/type and click table headers to sort columns.
 - **Robust Error Handling**: Explicit Loading and Error states are conditionally rendered across all fetching components.
 
+## API Endpoints
+
+### POST /api/accounts
+Creates a new financial account.
+**Body:** `{ name, type, country, currency, balance, institution }`
+**Response:** `{ _id, userId, name, type, country, currency, balance, institution, createdAt }`
+
+### GET /api/stats/networth
+Returns total net worth in USD with breakdowns.
+**Response:** `{ totalUSD: 28420, byCountry: { Sweden: 15640, Ecuador: 9900 }, byType: { savings: 11100, investment: 14800 } }`
+
 ## How to Run Locally
 
 ### 1. Installation
