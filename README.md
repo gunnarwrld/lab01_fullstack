@@ -2,6 +2,8 @@
 
 A multi-currency finance tracker built for international students to aggregate checking, savings, and investment accounts from different countries into a single USD net worth dashboard.
 
+> **Status:** finished coursework for the DA219B fullstack lab. Not maintained. It is a separate project from my later [FinanceTracker](https://github.com/gunnarwrld/personal-finance-web-app) app and shares no code with it.
+
 ## Tech Stack
 - **Frontend**: React, Vite
 - **Backend**: Express.js, Node.js
@@ -36,9 +38,13 @@ Returns total net worth in USD with breakdowns.
 ## How to Run Locally
 
 ### 1. Installation
-Install dependencies in the root directory (which runs concurrently for frontend and backend):
+You need Node.js 18 or newer and a MongoDB database (Atlas or local).
+
+The root `package.json` only installs `concurrently`, so install each part separately:
 ```bash
-npm install
+npm install                    # root: concurrently
+npm install --prefix backend   # Express, Mongoose
+npm install --prefix frontend  # React, Vite
 ```
 
 ### 2. Environment Variables
@@ -60,3 +66,7 @@ npm run dev
 ```
 - Frontend starts at: `http://localhost:5173`
 - Backend API starts at: `http://localhost:8000/api`
+
+## Tests
+
+There are no automated tests yet. `npm test` in `backend/` is the default npm placeholder and exits with an error.
